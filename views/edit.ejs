@@ -1,0 +1,32 @@
+<!-- views/edit.ejs -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Ordem de Serviço</title>
+    <link rel="stylesheet" href="/edit.css">
+</head>
+<body>
+    <h2>Editar Ordem de Serviço</h2>
+    <form action="/update/<%= order.id %>" method="post">
+        <label for="orderNumber">Número da Ordem:</label>
+        <input type="text" id="orderNumber" name="orderNumber" value="<%= order.orderNumber %>" required>
+        <label for="customerName">Nome do Cliente:</label>
+        <input type="text" id="customerName" name="customerName" value="<%= order.customerName %>" required>
+        <label for="date">Data:</label>
+        <input type="date" id="date" name="date" value="<%= order.date %>" required>
+        <label for="product">Produto:</label>
+        <input type="text" id="product" name="product" value="<%= order.product %>" required>
+        <label for="repairCost">Valor do Reparo:</label>
+        <input type="number" id="repairCost" name="repairCost" value="<%= order.repairCost %>" required>
+        <label for="description">Descrição do Produto:</label>
+        <input type="text" id="description" name="description" value="<%= order.description %>">
+        <button type="submit">Salvar</button>
+    </form>
+    <br>
+    <form action="/delete/<%= order.id %>" method="post">
+        <button type="submit">Excluir Ordem</button>
+</body>
+</html>

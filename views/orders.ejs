@@ -1,0 +1,55 @@
+<!-- views/orders.ejs -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordens de Serviço</title>
+    <link rel="stylesheet" href="orders.css">
+</head>
+<body>
+    <h2>Ordens de Serviço</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Número da Ordem</th>
+            <th>Nome do Cliente</th>
+            <th>Data</th>
+            <th>Produto</th>
+            <th>Valor do Reparo</th>
+            <th>Descrição do Produto</th>
+            <th>Situação</th>
+            <th>Ações</th>
+        </tr>
+        <% orders.forEach(order => { %>
+        <% let currentDate = new Date(); %>
+        <% let orderDate = new Date(order.date); %>
+        <% let differenceInDays = Math.ceil((currentDate - orderDate) / (1000 * 60 * 60 * 24)); %>
+        <tr>
+            <td><%= order.id %></td>
+            <td><%= order.orderNumber %></td>
+            <td><%= order.customerName %></td>
+            <td><%= order.date %></td>
+            <td><%= order.product %></td>
+            <td>R$ <%= order.repairCost %></td>
+            <td><%= order.description || '' %></td>
+            <td>
+                <div class="status <%= differenceInDays <= 3 ? 'green' : differenceInDays <= 5 ? 'orange' : 'red' %>"></div>
+                <% if (differenceInDays <= 3) { %>
+                    Dentro do prazo (<%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
+                <% } else if (differenceInDays <= 5) { %>
+                    Perto de expirar (atraso de <%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
+                <% } else { %>
+                    Atrasado (atraso de <%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
+                <% } %>
+            </td>
+            <td>
+                <a href="/edit/<%= order.id %>"><button>Editar</button></a> <!-- Botão Editar -->
+            </td>
+        </tr>
+        <% }) %>
+    </table>
+    <a href="/"><button>Adicionar nova ordem</button></a>
+</body>
+</html>

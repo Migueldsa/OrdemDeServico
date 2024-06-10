@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Ordem de Serviço</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+    <h2>Ordem de Serviço</h2>
+    <form action="/add-order" method="post">
+        <div class="form-group">
+            <label for="orderNumber">Número da Ordem</label>
+            <input type="text" id="orderNumber" name="orderNumber" required>
+        </div>
+        <div class="form-group">
+            <label for="customerName">Nome do Cliente</label>
+            <input type="text" id="customerName" name="customerName" required>
+        </div>
+        <div class="form-group">
+            <label for="date">Data</label>
+            <input type="date" id="date" name="date" required>
+        </div>
+        <div class="form-group">
+            <label for="product">Produto</label>
+            <input type="text" id="product" name="product" required>
+        </div>
+        <div class="form-group">
+            <label for="repairCost">Valor do Reparo</label>
+            <input type="text" id="repairCost" name="repairCost" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Descrição do Produto</label>
+            <textarea id="description" name="description" required></textarea>
+        </div>
+        <div class="form-group">
+            <button type="submit">Salvar</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
