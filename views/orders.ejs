@@ -1,5 +1,3 @@
-<!-- views/orders.ejs -->
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -7,49 +5,126 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ordens de Serviço</title>
     <link rel="stylesheet" href="orders.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> <!-- Inclua o jQuery -->
+    <script>
+        // Função para ordenar a tabela por coluna selecionada
+        function sortTable(columnIndex) {
+            var table, rows, switching, i, x, y, shouldSwitch;
+            table = document.getElementById("ordersTable");
+            switching = true;
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[columnIndex];
+                    y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+                    var xValue, yValue;
+    
+                    // Converte os valores para números se estiverem nas colunas de ID ou Número da Ordem
+                    if (columnIndex === 0 || columnIndex === 1) {
+                        xValue = parseInt(x.innerHTML);
+                        yValue = parseInt(y.innerHTML);
+                    } else {
+                        xValue = x.innerHTML.toLowerCase();
+                        yValue = y.innerHTML.toLowerCase();
+                    }
+    
+                    if (columnIndex === 0 || columnIndex === 1) {
+                        if (xValue > yValue) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else {
+                        if (xValue > yValue) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+        }
+    
+        // Função para lidar com a mudança no dropdown de ordenação
+        function handleSortChange() {
+            var sortOption = document.getElementById("sortOptions").value;
+            if (sortOption === "id") {
+                sortTable(0); // Ordena por ID
+            } else if (sortOption === "orderNumber") {
+                sortTable(1); // Ordena por Número da Ordem
+            } else if (sortOption === "customerName") {
+                sortTable(2); // Ordena por Nome do Cliente
+            } else if (sortOption === "date") {
+                sortTable(3); // Ordena por Data
+            } else if (sortOption === "product") {
+                sortTable(4); // Ordena por Produto
+            } else if (sortOption === "repairCost") {
+                sortTable(5); // Ordena por Valor do Reparo
+            }
+        }
+    </script>
+    
 </head>
 <body>
     <h2>Ordens de Serviço</h2>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Número da Ordem</th>
-            <th>Nome do Cliente</th>
-            <th>Data</th>
-            <th>Produto</th>
-            <th>Valor do Reparo</th>
-            <th>Descrição do Produto</th>
-            <th>Situação</th>
-            <th>Ações</th>
-        </tr>
-        <% orders.forEach(order => { %>
-        <% let currentDate = new Date(); %>
-        <% let orderDate = new Date(order.date); %>
-        <% let differenceInDays = Math.ceil((currentDate - orderDate) / (1000 * 60 * 60 * 24)); %>
-        <tr>
-            <td><%= order.id %></td>
-            <td><%= order.orderNumber %></td>
-            <td><%= order.customerName %></td>
-            <td><%= order.date %></td>
-            <td><%= order.product %></td>
-            <td>R$ <%= order.repairCost %></td>
-            <td><%= order.description || '' %></td>
-            <td>
-                <div class="status <%= differenceInDays <= 3 ? 'green' : differenceInDays <= 5 ? 'orange' : 'red' %>"></div>
-                <% if (differenceInDays <= 3) { %>
-                    Dentro do prazo (<%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
-                <% } else if (differenceInDays <= 5) { %>
-                    Perto de expirar (atraso de <%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
-                <% } else { %>
-                    Atrasado (atraso de <%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
-                <% } %>
-            </td>
-            <td>
-                <a href="/edit/<%= order.id %>"><button>Editar</button></a> <!-- Botão Editar -->
-            </td>
-        </tr>
-        <% }) %>
+
+    <!-- Dropdown para seleção de ordenação -->
+    <select id="sortOptions" onchange="handleSortChange()">
+        <option value="id">ID</option>
+        <option value="orderNumber">Número da Ordem</option>
+        <option value="customerName">Nome do Cliente</option>
+        <option value="date">Data</option>
+    </select>
+
+    <table id="ordersTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Número da Ordem</th>
+                <th>Nome do Cliente</th>
+                <th>Data</th>
+                <th>Produto</th>
+                <th>Valor do Reparo</th>
+                <th>Descrição do Produto</th>
+                <th>Situação</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% orders.forEach(order => { %>
+            <% let currentDate = new Date(); %>
+            <% let orderDate = new Date(order.date); %>
+            <% let differenceInDays = Math.ceil((currentDate - orderDate) / (1000 * 60 * 60 * 24)); %>
+            <tr>
+                <td><%= order.id %></td>
+                <td><%= order.orderNumber %></td>
+                <td><%= order.customerName %></td>
+                <td><%= order.date %></td>
+                <td><%= order.product %></td>
+                <td>R$ <%= order.repairCost %></td>
+                <td><%= order.description || '' %></td>
+                <td>
+                    <div class="status <%= differenceInDays <= 3 ? 'green' : differenceInDays <= 5 ? 'orange' : 'red' %>"></div>
+                    <% if (differenceInDays <= 3) { %>
+                        Dentro do prazo (<%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
+                    <% } else if (differenceInDays <= 5) { %>
+                        Perto de expirar (atraso de <%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
+                    <% } else { %>
+                        Atrasado (atraso de <%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
+                    <% } %>
+                </td>
+                <td>
+                    <a href="/edit/<%= order.id %>"><button>Editar</button></a> <!-- Botão Editar -->
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
     </table>
     <a href="/"><button>Adicionar nova ordem</button></a>
 </body>
 </html>
+
