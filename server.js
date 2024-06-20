@@ -16,7 +16,7 @@ app.set('views', path.join(__dirname, 'views'));
 // Importar rotas
 const indexRoutes = require('./routes/index');
 const ordersRoutes = require('./routes/orderRoutes');
-const authRoutes = require('./routes/auth');
+const authRoutes = require('./routes/authRoutes');
 
 // Usar rotas
 app.use('/', indexRoutes);
