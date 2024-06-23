@@ -90,8 +90,9 @@
                 <th>Produto</th>
                 <th>Valor do Reparo</th>
                 <th>Descrição do Produto</th>
-                <th>Situação</th>
-                <th>Ações</th>
+                <th>Tempo</th>
+                <th>Aprovado</th>
+                <th>Editar</th>
             </tr>
         </thead>
         <tbody>
@@ -107,7 +108,7 @@
                 <td><%= order.product %></td>
                 <td>R$ <%= order.repairCost %></td>
                 <td><%= order.description || '' %></td>
-                <td>
+                <td id="status_<%= order.id %>">
                     <div class="status <%= differenceInDays <= 3 ? 'green' : differenceInDays <= 5 ? 'orange' : 'red' %>"></div>
                     <% if (differenceInDays <= 3) { %>
                         Dentro do prazo (<%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
@@ -117,6 +118,34 @@
                         Atrasado (atraso de <%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
                     <% } %>
                 </td>
+                <td>
+                    <label>
+                        <input type="radio" name="approval_<%= order.id %>" value="aprovado" onclick="updateStatus(<%= order.id %>, 'Sim', 'green', <%= differenceInDays %>)"> Sim
+                    </label>
+                    <br>
+                    <label>
+                        <input type="radio" name="approval_<%= order.id %>" value="nao_aprovado" onclick="updateStatus(<%= order.id %>, 'Não', 'red', <%= differenceInDays %>)"> Não 
+                    </label>
+                    <br>
+                    <label>
+                        <input type="radio" name="approval_<%= order.id %>" value="finalizado" onclick="updateStatus(<%= order.id %>, 'Pronto', 'blue', <%= differenceInDays %>)"> Pronto
+                    </label>
+                </td>
+                
+                <script>
+                    // Função para atualizar o status ao clicar em Aprovado, Não Aprovado ou Pronto
+                    function updateStatus(orderId, statusText, statusColor, differenceInDays) {
+                        // Monta o HTML com o texto e a bolinha colorida
+                        var statusHTML = '<span class="bullet ' + statusColor + '"></span> ' + statusText + ' (' + differenceInDays + ' dia' + (differenceInDays === 1 ? '' : 's') + ')';
+                        
+                        // Seleciona o elemento <td> que contém o status e atualiza seu conteúdo
+                        var statusElement = document.getElementById('status_' + orderId);
+                        if (statusElement) {
+                            statusElement.innerHTML = statusHTML;
+                        }
+                    }
+                </script>
+                
                 <td>
                     <a href="/edit/<%= order.id %>"><button>Editar</button></a> <!-- Botão Editar -->
                 </td>

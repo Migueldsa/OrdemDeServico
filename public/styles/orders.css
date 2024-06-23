@@ -8,6 +8,7 @@ th { background-color: #333; color: #ff0; }
 .green { background-color: green; }
 .orange { background-color: orange; }
 .red { background-color: red; }
+.blue {background-color: blue;}
 button {
   background-color: #333;
   color: #ff0;
@@ -21,3 +22,5 @@ button {
 button:hover {
   background-color: #555;
 }
+
+.bullet {width: 20px; height: 20px; display: inline-block; border-radius: 50%; margin-right: 5px; }
