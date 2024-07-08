@@ -2,8 +2,8 @@ const db = require('../config/db');
 
 const Order = {
     create: (order, callback) => {
-        db.run(`INSERT INTO orders (orderNumber, customerName, date, product, repairCost) VALUES (?, ?, ?, ?, ?)`,
-            [order.orderNumber, order.customerName, order.date, order.product, order.repairCost], function(err) {
+        db.run(`INSERT INTO orders (orderNumber, customerName, telephone, date, product, repairCost) VALUES (?, ?, ?, ?, ?, ?)`,
+            [order.orderNumber, order.customerName, order.telephone, order.date, order.product, order.repairCost], function(err) {
                 if (err) {
                     return callback(err);
                 }
@@ -15,8 +15,8 @@ const Order = {
             });
     },
     update: (id, order, callback) => {
-        db.run(`UPDATE orders SET orderNumber = ?, customerName = ?, date = ?, product = ?, repairCost = ? WHERE id = ?`,
-            [order.orderNumber, order.customerName, order.date, order.product, order.repairCost, id], (err) => {
+        db.run(`UPDATE orders SET orderNumber = ?, customerName = ?, telephone = ?, date = ?, product = ?, repairCost = ? WHERE id = ?`,
+            [order.orderNumber, order.customerName, order.telephone, order.date, order.product, order.repairCost, id], (err) => {
                 if (err) {
                     return callback(err);
                 }

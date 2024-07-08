@@ -24,3 +24,10 @@ button:hover {
 }
 
 .bullet {width: 20px; height: 20px; display: inline-block; border-radius: 50%; margin-right: 5px; }
+
+.filter-buttons {
+  margin-bottom: 20px;
+}
+.filter-buttons button {
+  margin-right: 10px;
+}

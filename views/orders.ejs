@@ -7,85 +7,42 @@
     <link rel="stylesheet" href="/styles/orders.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> <!-- Inclua o jQuery -->
     <script>
-        // Função para ordenar a tabela por coluna selecionada
-        function sortTable(columnIndex) {
-            var table, rows, switching, i, x, y, shouldSwitch;
-            table = document.getElementById("ordersTable");
-            switching = true;
-            while (switching) {
-                switching = false;
-                rows = table.rows;
-                for (i = 1; i < (rows.length - 1); i++) {
-                    shouldSwitch = false;
-                    x = rows[i].getElementsByTagName("TD")[columnIndex];
-                    y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
-                    var xValue, yValue;
-    
-                    // Converte os valores para números se estiverem nas colunas de ID ou Número da Ordem
-                    if (columnIndex === 0 || columnIndex === 1) {
-                        xValue = parseInt(x.innerHTML);
-                        yValue = parseInt(y.innerHTML);
-                    } else {
-                        xValue = x.innerHTML.toLowerCase();
-                        yValue = y.innerHTML.toLowerCase();
-                    }
-    
-                    if (columnIndex === 0 || columnIndex === 1) {
-                        if (xValue > yValue) {
-                            shouldSwitch = true;
-                            break;
-                        }
-                    } else {
-                        if (xValue > yValue) {
-                            shouldSwitch = true;
-                            break;
-                        }
+        // Função para filtrar a tabela por status na coluna "Tempo" e atualizar o status
+        function handleAction(action, orderId, statusText, statusColor, differenceInDays) {
+            if (action === "filter") {
+                let table = document.getElementById("ordersTable"), rows = table.getElementsByTagName("tr");
+                for (let i = 1; i < rows.length; i++) {
+                    let tempoCell = rows[i].getElementsByTagName("td")[8];
+                    if (tempoCell) {
+                        let tempoText = tempoCell.textContent || tempoCell.innerText;
+                        rows[i].style.display = (statusText === "todos" || tempoText.includes(statusText)) ? "" : "none";
                     }
                 }
-                if (shouldSwitch) {
-                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                    switching = true;
-                }
-            }
-        }
-    
-        // Função para lidar com a mudança no dropdown de ordenação
-        function handleSortChange() {
-            var sortOption = document.getElementById("sortOptions").value;
-            if (sortOption === "id") {
-                sortTable(0); // Ordena por ID
-            } else if (sortOption === "orderNumber") {
-                sortTable(1); // Ordena por Número da Ordem
-            } else if (sortOption === "customerName") {
-                sortTable(2); // Ordena por Nome do Cliente
-            } else if (sortOption === "date") {
-                sortTable(3); // Ordena por Data
-            } else if (sortOption === "product") {
-                sortTable(4); // Ordena por Produto
-            } else if (sortOption === "repairCost") {
-                sortTable(5); // Ordena por Valor do Reparo
+            } else if (action === "updateStatus") {
+                let statusHTML = `<span class="bullet ${statusColor}"></span> ${statusText} (${differenceInDays} dia${differenceInDays === 1 ? '' : 's'})`;
+                document.getElementById('status_' + orderId).innerHTML = statusHTML;
             }
         }
     </script>
-    
 </head>
 <body>
     <h2>Ordens de Serviço</h2>
 
-    <!-- Dropdown para seleção de ordenação -->
-    <select id="sortOptions" onchange="handleSortChange()">
-        <option value="id">ID</option>
-        <option value="orderNumber">Número da Ordem</option>
-        <option value="customerName">Nome do Cliente</option>
-        <option value="date">Data</option>
-    </select>
-
+    <!-- Botões para seleção de filtro -->
+    <div class="filter-buttons">
+        <button onclick="handleAction('filter', null, 'todos')">Todos</button>
+        <button onclick="handleAction('filter', null, 'Aprovado')">Aprovado</button>
+        <button onclick="handleAction('filter', null, 'Recusado')">Não Aprovado</button>
+        <button onclick="handleAction('filter', null, 'Pronto')">Finalizado</button>
+    </div>
+    
     <table id="ordersTable">
         <thead>
             <tr>
                 <th>ID</th> 
                 <th>Número da Ordem</th>
                 <th>Nome do Cliente</th>
+                <th>Telefone</th>
                 <th>Data</th>
                 <th>Produto</th>
                 <th>Valor do Reparo</th>
@@ -97,13 +54,13 @@
         </thead>
         <tbody>
             <% orders.forEach(order => { %>
-            <% let currentDate = new Date(); %>
-            <% let orderDate = new Date(order.date); %>
+            <% let currentDate = new Date(), orderDate = new Date(order.date); %>
             <% let differenceInDays = Math.ceil((currentDate - orderDate) / (1000 * 60 * 60 * 24)); %>
             <tr>
                 <td><%= order.id %></td>
                 <td><%= order.orderNumber %></td>
                 <td><%= order.customerName %></td>
+                <td><%= order.telephone %></td>
                 <td><%= order.date %></td>
                 <td><%= order.product %></td>
                 <td>R$ <%= order.repairCost %></td>
@@ -111,41 +68,26 @@
                 <td id="status_<%= order.id %>">
                     <div class="status <%= differenceInDays <= 3 ? 'green' : differenceInDays <= 5 ? 'orange' : 'red' %>"></div>
                     <% if (differenceInDays <= 3) { %>
-                        Dentro do prazo (<%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
+                        Verificar (<%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
                     <% } else if (differenceInDays <= 5) { %>
-                        Perto de expirar (atraso de <%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
+                        Verificar (atraso de <%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
                     <% } else { %>
-                        Atrasado (atraso de <%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
+                        Verificar (atraso de <%= differenceInDays  %> dia<%= differenceInDays === 1 ? '' : 's' %>)
                     <% } %>
                 </td>
                 <td>
                     <label>
-                        <input type="radio" name="approval_<%= order.id %>" value="aprovado" onclick="updateStatus(<%= order.id %>, 'Sim', 'green', <%= differenceInDays %>)"> Sim
+                        <input type="radio" name="approval_<%= order.id %>" value="aprovado" onclick="handleAction('updateStatus', <%= order.id %>, 'Aprovado', 'green', <%= differenceInDays %>)"> Aprovado
                     </label>
                     <br>
                     <label>
-                        <input type="radio" name="approval_<%= order.id %>" value="nao_aprovado" onclick="updateStatus(<%= order.id %>, 'Não', 'red', <%= differenceInDays %>)"> Não 
+                        <input type="radio" name="approval_<%= order.id %>" value="nao_aprovado" onclick="handleAction('updateStatus', <%= order.id %>, 'Recusado', 'red', <%= differenceInDays %>)"> Recusado 
                     </label>
                     <br>
                     <label>
-                        <input type="radio" name="approval_<%= order.id %>" value="finalizado" onclick="updateStatus(<%= order.id %>, 'Pronto', 'blue', <%= differenceInDays %>)"> Pronto
+                        <input type="radio" name="approval_<%= order.id %>" value="finalizado" onclick="handleAction('updateStatus', <%= order.id %>, 'Pronto', 'blue', <%= differenceInDays %>)"> Pronto
                     </label>
                 </td>
-                
-                <script>
-                    // Função para atualizar o status ao clicar em Aprovado, Não Aprovado ou Pronto
-                    function updateStatus(orderId, statusText, statusColor, differenceInDays) {
-                        // Monta o HTML com o texto e a bolinha colorida
-                        var statusHTML = '<span class="bullet ' + statusColor + '"></span> ' + statusText + ' (' + differenceInDays + ' dia' + (differenceInDays === 1 ? '' : 's') + ')';
-                        
-                        // Seleciona o elemento <td> que contém o status e atualiza seu conteúdo
-                        var statusElement = document.getElementById('status_' + orderId);
-                        if (statusElement) {
-                            statusElement.innerHTML = statusHTML;
-                        }
-                    }
-                </script>
-                
                 <td>
                     <a href="/edit/<%= order.id %>"><button>Editar</button></a> <!-- Botão Editar -->
                 </td>
@@ -156,4 +98,3 @@
     <a href="/"><button>Adicionar nova ordem</button></a>
 </body>
 </html>
-

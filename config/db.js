@@ -6,9 +6,11 @@ db.serialize(() => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         orderNumber TEXT,
         customerName TEXT,
+        telephone TEXT,
         date TEXT,
         product TEXT,
         repairCost TEXT
+        
     )`);
 
     db.run(`CREATE TABLE IF NOT EXISTS productDescriptions (
